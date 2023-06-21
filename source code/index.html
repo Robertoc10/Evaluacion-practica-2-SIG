@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <style>
+        #map {
+            
+            height: 90vh;
+        }
+        </style>
+        <title> Accidentes de transito en El Salvador 2015</title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="data/2015_1.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+            highlightLayer.openPopup();
+        }
+
+       
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[12.941202090049286,-90.19320888519289],[14.663873905544007,-87.62259464263916]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="http://localhost:8080/geoserver/cnr/wms" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        var title = L.control();
+        title.onAdd = function (map) {
+        var div = L.DomUtil.create('div', 'info');
+        div.innerHTML +=
+        '<h2>Accidentes de transito El Salvador</h2>2015';
+        return div;
+        };
+        title.addTo(map);
+        
+
+        map.createPane('pane_OSMStandard_0');
+        map.getPane('pane_OSMStandard_0').style.zIndex = 400;
+        var layer_OSMStandard_0 = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            pane: 'pane_OSMStandard_0',
+            opacity: 1.0,
+            attribution: '<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors, CC-BY-SA</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 19
+        });
+        layer_OSMStandard_0;
+        map.addLayer(layer_OSMStandard_0);
+        function pop_2015_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                    if (typeof layer.closePopup == 'function') {
+                        layer.closePopup();
+                    } else {
+                        layer.eachLayer(function(feature){
+                            feature.closePopup()
+                        });
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + "Municipio: " +  (feature.properties['NOM_MUN'] !== null ? autolinker.link(feature.properties['NOM_MUN'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + "Departamento: " + (feature.properties['NOM_DPTO'] !== null ? autolinker.link(feature.properties['NOM_DPTO'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                    <tr>\
+                        <td colspan="2">' + "Accidentes: " + (feature.properties['Accidentes'] !== null ? autolinker.link(feature.properties['Accidentes'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + "Fallecidos: " + (feature.properties['Fallecidos'] !== null ? autolinker.link(feature.properties['Fallecidos'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_2015_1_0(feature) {
+            if (feature.properties['Accidentes'] >= 0.000000 && feature.properties['Accidentes'] <= 9.000000 ) {
+                return {
+                pane: 'pane_2015_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,255,255,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Accidentes'] >= 9.000000 && feature.properties['Accidentes'] <= 27.000000 ) {
+                return {
+                pane: 'pane_2015_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,219,219,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Accidentes'] >= 27.000000 && feature.properties['Accidentes'] <= 53.000000 ) {
+                return {
+                pane: 'pane_2015_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,182,182,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Accidentes'] >= 53.000000 && feature.properties['Accidentes'] <= 85.000000 ) {
+                return {
+                pane: 'pane_2015_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,146,146,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Accidentes'] >= 85.000000 && feature.properties['Accidentes'] <= 116.000000 ) {
+                return {
+                pane: 'pane_2015_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,109,109,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Accidentes'] >= 116.000000 && feature.properties['Accidentes'] <= 174.000000 ) {
+                return {
+                pane: 'pane_2015_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,73,73,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Accidentes'] >= 174.000000 && feature.properties['Accidentes'] <= 311.000000 ) {
+                return {
+                pane: 'pane_2015_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,36,36,1.0)',
+                interactive: true,
+            }
+            }
+            if (feature.properties['Accidentes'] >= 311.000000 && feature.properties['Accidentes'] <= 2550.000000 ) {
+                return {
+                pane: 'pane_2015_1',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1.0, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(255,0,0,1.0)',
+                interactive: true,
+            }
+            }
+        }
+        map.createPane('pane_2015_1');
+        map.getPane('pane_2015_1').style.zIndex = 401;
+        map.getPane('pane_2015_1').style['mix-blend-mode'] = 'normal';
+        var layer_2015_1 = new L.geoJson(json_2015_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_2015_1',
+            layerName: 'layer_2015_1',
+            pane: 'pane_2015_1',
+            onEachFeature: pop_2015_1,
+            style: style_2015_1_0,
+        });
+        bounds_group.addLayer(layer_2015_1);
+        map.addLayer(layer_2015_1);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'2015<br /><table><tr><td style="text-align: center;"><img src="legend/2015_1_090.png" /></td><td>0 - 9</td></tr><tr><td style="text-align: center;"><img src="legend/2015_1_9271.png" /></td><td>9 - 27</td></tr><tr><td style="text-align: center;"><img src="legend/2015_1_27532.png" /></td><td>27 - 53</td></tr><tr><td style="text-align: center;"><img src="legend/2015_1_53853.png" /></td><td>53 - 85</td></tr><tr><td style="text-align: center;"><img src="legend/2015_1_851164.png" /></td><td>85 - 116</td></tr><tr><td style="text-align: center;"><img src="legend/2015_1_1161745.png" /></td><td>116 - 174</td></tr><tr><td style="text-align: center;"><img src="legend/2015_1_1743116.png" /></td><td>174 - 311</td></tr><tr><td style="text-align: center;"><img src="legend/2015_1_31125507.png" /></td><td>311 - 2550</td></tr></table>': layer_2015_1,"OSM Standard": layer_OSMStandard_0,}).addTo(map);
+        setBounds();
+        </script>
+    </body>
+</html>
